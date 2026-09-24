@@ -673,7 +673,7 @@ public class Minecraft implements IThreadListener {
         this.scaledResolution = new ScaledResolution(this);
     }
 
-private void drawSplashScreen(TextureManager textureManagerInstance) {
+    private void drawSplashScreen(TextureManager textureManagerInstance) {
 	Display.update();
 	updateDisplayMode();
 	GlStateManager.viewport(0, 0, displayWidth, displayHeight);
@@ -723,13 +723,18 @@ private void drawSplashScreen(TextureManager textureManagerInstance) {
 		textureManagerInstance.bindTexture(herobrineLoc);
 		IOUtils.closeQuietly(herobrineStream);
 
-		int herobrineWidth = 256;
-		int herobrineHeight = 256;
+		int herobrineWidth = 64;
+		int herobrineHeight = 64;
 
 		int posX = (scaledResolution.getScaledWidth() - herobrineWidth) / 2;
-		int posY = (scaledResolution.getScaledHeight() - herobrineHeight) / 2 + 100;
+		int posY = (scaledResolution.getScaledHeight() - herobrineHeight) / 2 + 90;
 
-		this.draw(posX, posY, 0, 0, herobrineWidth, herobrineHeight, 255, 255, 255, 255);
+		bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+		bufferbuilder.pos(posX, posY + herobrineHeight, 0.0D).tex(0.0D, 1.0D).color(255, 255, 255, 255).endVertex();
+		bufferbuilder.pos(posX + herobrineWidth, posY + herobrineHeight, 0.0D).tex(1.0D, 1.0D).color(255, 255, 255, 255).endVertex();
+		bufferbuilder.pos(posX + herobrineWidth, posY, 0.0D).tex(1.0D, 0.0D).color(255, 255, 255, 255).endVertex();
+		bufferbuilder.pos(posX, posY, 0.0D).tex(0.0D, 0.0D).color(255, 255, 255, 255).endVertex();
+		tessellator.draw();
 	} catch (Exception e) {
 		LOGGER.error("Unable to load herobrine.png", e);
 	}
@@ -739,7 +744,7 @@ private void drawSplashScreen(TextureManager textureManagerInstance) {
 	GlStateManager.enableAlpha();
 	GlStateManager.alphaFunc(516, 0.1F);
 	this.updateDisplay();
-}
+    }
 
     /**
      * Draw with the WorldRenderer
