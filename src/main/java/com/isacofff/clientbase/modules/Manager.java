@@ -1,7 +1,7 @@
 package com.isacofff.clientbase.modules;
 
 import com.isacofff.clientbase.modules.features.ClickGui;
-import com.isacofff.clientbase.modules.features.ExampleModule;
+//import com.isacofff.clientbase.modules.features.ExampleModule;
 import com.isacofff.clientbase.modules.features.FullBright;
 import com.isacofff.clientbase.Category;
 
@@ -14,7 +14,7 @@ public class Manager {
     public void init() {
     modules.add(new ClickGui());
     modules.add(new FullBright());
-    modules.add(new ExampleModule());
+    //modules.add(new ExampleModule());
     }
 
     public void onTick() {

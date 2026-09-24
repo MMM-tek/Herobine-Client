@@ -94,33 +94,8 @@ public class LoadingScreenRenderer implements IProgressUpdate {
 				GlStateManager.clear(16640);
 
 				Tessellator tessellator = Tessellator.getInstance();
-				WorldRenderer bufferbuilder = tessellator.getBuffer();
+				WorldRenderer bufferbuilder = tessellator.getWorldRenderer();
 
-				GlStateManager.disableTexture2D();
-				bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
-				bufferbuilder.pos(0.0D, (double) l, 0.0D).color(0, 0, 0, 255).endVertex();
-				bufferbuilder.pos((double) k, (double) l, 0.0D).color(0, 0, 0, 255).endVertex();
-				bufferbuilder.pos((double) k, 0.0D, 0.0D).color(0, 0, 0, 255).endVertex();
-				bufferbuilder.pos(0.0D, 0.0D, 0.0D).color(0, 0, 0, 255).endVertex();
-				tessellator.draw();
-
-				GlStateManager.enableTexture2D();
-				GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-
-				this.mc.getTextureManager().bindTexture(new ResourceLocation("minecraft", "textures/gui/title/herobrine.png"));
-
-				int imageWidth = 256;
-				int imageHeight = 256;
-
-				double posX = (k - imageWidth) / 2.0D;
-				double posY = (l / 2.0D) - (imageHeight / 2.0D) - 55;
-
-				bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-				bufferbuilder.pos(posX, posY + imageHeight, 0.0D).tex(0.0D, 1.0D).color(255, 255, 255, 255).endVertex();
-				bufferbuilder.pos(posX + imageWidth, posY + imageHeight, 0.0D).tex(1.0D, 1.0D).color(255, 255, 255, 255).endVertex();
-				bufferbuilder.pos(posX + imageWidth, posY, 0.0D).tex(1.0D, 0.0D).color(255, 255, 255, 255).endVertex();
-				bufferbuilder.pos(posX, posY, 0.0D).tex(0.0D, 0.0D).color(255, 255, 255, 255).endVertex();
-				tessellator.draw();
 
 				if (progress >= 0) {
 					int k1 = k / 2 - 50;
