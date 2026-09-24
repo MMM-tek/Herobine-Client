@@ -130,7 +130,7 @@ public class LoadingScreenRenderer implements IProgressUpdate {
 				bufferbuilder.pos(0.0D, 0.0D, 0.0D).color(0, 0, 0, 255).endVertex();
 				tessellator.draw();
 				GlStateManager.enableTexture2D();
-				this.mc.getTextureManager().bindTexture(new ResourceLocation("/textures/gui/title/herobrine.png"));
+				this.mc.getTextureManager().bindTexture(new ResourceLocation("textures/gui/title/herobrine.png"));
 				int imageWidth = 256; 
 				int imageHeight = 256;
 				double posX = (k / 2.0D) - (imageWidth / 2.0D);
