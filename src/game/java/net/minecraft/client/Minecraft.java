@@ -673,55 +673,73 @@ public class Minecraft implements IThreadListener {
         this.scaledResolution = new ScaledResolution(this);
     }
 
-    private void drawSplashScreen(TextureManager textureManagerInstance) {
-        Display.update();
-        updateDisplayMode();
-        GlStateManager.viewport(0, 0, displayWidth, displayHeight);
-        GlStateManager.matrixMode(5889);
-        GlStateManager.loadIdentity();
-        GlStateManager.ortho(0.0D, (double) scaledResolution.getScaledWidth(),
-                (double) scaledResolution.getScaledHeight(), 0.0D, 1000.0D, 3000.0D);
-        GlStateManager.matrixMode(5888);
-        GlStateManager.loadIdentity();
-        GlStateManager.translate(0.0F, 0.0F, -2000.0F);
-        GlStateManager.disableLighting();
-        GlStateManager.disableFog();
-        GlStateManager.disableDepth();
-        GlStateManager.enableTexture2D();
-        InputStream inputstream = null;
+private void drawSplashScreen(TextureManager textureManagerInstance) {
+	Display.update();
+	updateDisplayMode();
+	GlStateManager.viewport(0, 0, displayWidth, displayHeight);
+	GlStateManager.matrixMode(5889);
+	GlStateManager.loadIdentity();
+	GlStateManager.ortho(0.0D, (double) scaledResolution.getScaledWidth(),
+			(double) scaledResolution.getScaledHeight(), 0.0D, 1000.0D, 3000.0D);
+	GlStateManager.matrixMode(5888);
+	GlStateManager.loadIdentity();
+	GlStateManager.translate(0.0F, 0.0F, -2000.0F);
+	GlStateManager.disableLighting();
+	GlStateManager.disableFog();
+	GlStateManager.disableDepth();
+	GlStateManager.enableTexture2D();
 
-        try {
-            inputstream = this.mcDefaultResourcePack.getInputStream(LOCATION_MOJANG_PNG);
-            this.mojangLogo = textureManagerInstance.getDynamicTextureLocation("logo",
-                    new DynamicTexture(ImageData.loadImageFile(inputstream)));
-            textureManagerInstance.bindTexture(this.mojangLogo);
-        } catch (IOException ioexception) {
-            LOGGER.error("Unable to load logo: {}", LOCATION_MOJANG_PNG, ioexception);
-        } finally {
-            IOUtils.closeQuietly(inputstream);
-        }
+	InputStream inputstream = null;
+	try {
+		inputstream = this.mcDefaultResourcePack.getInputStream(LOCATION_MOJANG_PNG);
+		this.mojangLogo = textureManagerInstance.getDynamicTextureLocation("logo",
+				new DynamicTexture(ImageData.loadImageFile(inputstream)));
+		textureManagerInstance.bindTexture(this.mojangLogo);
+	} catch (IOException ioexception) {
+		LOGGER.error("Unable to load logo: {}", LOCATION_MOJANG_PNG, ioexception);
+	} finally {
+		IOUtils.closeQuietly(inputstream);
+	}
 
-        Tessellator tessellator = Tessellator.getInstance();
-        WorldRenderer bufferbuilder = tessellator.getBuffer();
-        bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-        bufferbuilder.pos(0.0D, (double) this.displayHeight, 0.0D).tex(0.0D, 0.0D).color(255, 255, 255, 255)
-                .endVertex();
-        bufferbuilder.pos((double) this.displayWidth, (double) this.displayHeight, 0.0D).tex(0.0D, 0.0D)
-                .color(255, 255, 255, 255).endVertex();
-        bufferbuilder.pos((double) this.displayWidth, 0.0D, 0.0D).tex(0.0D, 0.0D).color(255, 255, 255, 255).endVertex();
-        bufferbuilder.pos(0.0D, 0.0D, 0.0D).tex(0.0D, 0.0D).color(255, 255, 255, 255).endVertex();
-        tessellator.draw();
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        short short1 = 256;
-        short short2 = 256;
-        this.draw((scaledResolution.getScaledWidth() - short1) / 2,
-                (scaledResolution.getScaledHeight() - short2) / 2, 0, 0, short1, short2, 255, 255, 255, 255);
-        GlStateManager.disableLighting();
-        GlStateManager.disableFog();
-        GlStateManager.enableAlpha();
-        GlStateManager.alphaFunc(516, 0.1F);
-        this.updateDisplay();
-    }
+	Tessellator tessellator = Tessellator.getInstance();
+	WorldRenderer bufferbuilder = tessellator.getBuffer();
+	bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
+	bufferbuilder.pos(0.0D, (double) this.displayHeight, 0.0D).tex(0.0D, 0.0D).color(255, 255, 255, 255).endVertex();
+	bufferbuilder.pos((double) this.displayWidth, (double) this.displayHeight, 0.0D).tex(0.0D, 0.0D).color(255, 255, 255, 255).endVertex();
+	bufferbuilder.pos((double) this.displayWidth, 0.0D, 0.0D).tex(0.0D, 0.0D).color(255, 255, 255, 255).endVertex();
+	bufferbuilder.pos(0.0D, 0.0D, 0.0D).tex(0.0D, 0.0D).color(255, 255, 255, 255).endVertex();
+	tessellator.draw();
+
+	GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+
+	int mojangSize = 256;
+	this.draw((scaledResolution.getScaledWidth() - mojangSize) / 2,
+			(scaledResolution.getScaledHeight() - mojangSize) / 2 - 40, 0, 0, mojangSize, mojangSize, 255, 255, 255, 255);
+
+	try {
+		InputStream herobrineStream = this.mcDefaultResourcePack.getInputStream(new ResourceLocation("textures/gui/title/herobrine.png"));
+		ResourceLocation herobrineLoc = textureManagerInstance.getDynamicTextureLocation("herobrine_logo",
+				new DynamicTexture(ImageData.loadImageFile(herobrineStream)));
+		textureManagerInstance.bindTexture(herobrineLoc);
+		IOUtils.closeQuietly(herobrineStream);
+
+		int herobrineWidth = 256;
+		int herobrineHeight = 256;
+
+		int posX = (scaledResolution.getScaledWidth() - herobrineWidth) / 2;
+		int posY = (scaledResolution.getScaledHeight() - herobrineHeight) / 2 + 100;
+
+		this.draw(posX, posY, 0, 0, herobrineWidth, herobrineHeight, 255, 255, 255, 255);
+	} catch (Exception e) {
+		LOGGER.error("Unable to load herobrine.png", e);
+	}
+
+	GlStateManager.disableLighting();
+	GlStateManager.disableFog();
+	GlStateManager.enableAlpha();
+	GlStateManager.alphaFunc(516, 0.1F);
+	this.updateDisplay();
+}
 
     /**
      * Draw with the WorldRenderer
