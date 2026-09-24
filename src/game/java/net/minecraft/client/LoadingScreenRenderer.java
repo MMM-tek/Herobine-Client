@@ -14,39 +14,20 @@ import net.minecraft.util.MinecraftError;
 
 public class LoadingScreenRenderer implements IProgressUpdate {
 	private String message = "";
-
-	/** A reference to the Minecraft object. */
 	private final Minecraft mc;
-
-	/**
-	 * The text currently displayed (i.e. the argument to the last call to printText
-	 * or displayString)
-	 */
 	private String currentlyDisplayedText = "";
-
-	/** The system's time represented in milliseconds. */
 	private long systemTime = Minecraft.getSystemTime();
-
-	/** True if the loading ended with a success */
 	private boolean loadingSuccess;
 
 	public LoadingScreenRenderer(Minecraft mcIn) {
 		this.mc = mcIn;
 	}
 
-	/**
-	 * this string, followed by "working..." and then the "% complete" are the 3
-	 * lines shown. This resets progress to 0, and the WorkingString to
-	 * "working...".
-	 */
 	public void resetProgressAndMessage(String message) {
 		this.loadingSuccess = false;
 		this.displayString(message);
 	}
 
-	/**
-	 * Shows the 'Saving level' string.
-	 */
 	public void displaySavingString(String message) {
 		this.loadingSuccess = true;
 		this.displayString(message);
@@ -73,10 +54,6 @@ public class LoadingScreenRenderer implements IProgressUpdate {
 		}
 	}
 
-	/**
-	 * Displays a string on the loading screen supposed to indicate what is being
-	 * done currently.
-	 */
 	public void displayLoadingString(String message) {
 		if (!this.mc.running) {
 			if (!this.loadingSuccess) {
@@ -90,9 +67,6 @@ public class LoadingScreenRenderer implements IProgressUpdate {
 		}
 	}
 
-	/**
-	 * Updates the progress bar on the loading screen to the specified amount.
-	 */
 	public void setLoadingProgress(int progress) {
 		if (!this.mc.running) {
 			if (!this.loadingSuccess) {
@@ -104,7 +78,6 @@ public class LoadingScreenRenderer implements IProgressUpdate {
 			if (i - this.systemTime >= 100L) {
 				this.systemTime = i;
 				ScaledResolution scaledresolution = mc.scaledResolution;
-				int j = scaledresolution.getScaleFactor();
 				int k = scaledresolution.getScaledWidth();
 				int l = scaledresolution.getScaledHeight();
 
@@ -119,9 +92,10 @@ public class LoadingScreenRenderer implements IProgressUpdate {
 				GlStateManager.translate(0.0F, 0.0F, -200.0F);
 
 				GlStateManager.clear(16640);
-				
+
 				Tessellator tessellator = Tessellator.getInstance();
 				WorldRenderer bufferbuilder = tessellator.getBuffer();
+
 				GlStateManager.disableTexture2D();
 				bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
 				bufferbuilder.pos(0.0D, (double) l, 0.0D).color(0, 0, 0, 255).endVertex();
@@ -129,12 +103,18 @@ public class LoadingScreenRenderer implements IProgressUpdate {
 				bufferbuilder.pos((double) k, 0.0D, 0.0D).color(0, 0, 0, 255).endVertex();
 				bufferbuilder.pos(0.0D, 0.0D, 0.0D).color(0, 0, 0, 255).endVertex();
 				tessellator.draw();
+
 				GlStateManager.enableTexture2D();
-				this.mc.getTextureManager().bindTexture(new ResourceLocation("textures/gui/title/herobrine.png"));
-				int imageWidth = 256; 
+				GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+
+				this.mc.getTextureManager().bindTexture(new ResourceLocation("minecraft", "textures/gui/title/herobrine.png"));
+
+				int imageWidth = 256;
 				int imageHeight = 256;
-				double posX = (k / 2.0D) - (imageWidth / 2.0D);
-				double posY = (l / 2.0D) - (imageHeight / 2.0D) - 30;
+
+				double posX = (k - imageWidth) / 2.0D;
+				double posY = (l / 2.0D) - (imageHeight / 2.0D) - 55;
+
 				bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
 				bufferbuilder.pos(posX, posY + imageHeight, 0.0D).tex(0.0D, 1.0D).color(255, 255, 255, 255).endVertex();
 				bufferbuilder.pos(posX + imageWidth, posY + imageHeight, 0.0D).tex(1.0D, 1.0D).color(255, 255, 255, 255).endVertex();
@@ -143,23 +123,18 @@ public class LoadingScreenRenderer implements IProgressUpdate {
 				tessellator.draw();
 
 				if (progress >= 0) {
-					int i1 = 100;
-					int j1 = 2;
 					int k1 = k / 2 - 50;
 					int l1 = l / 2 + 16;
 					GlStateManager.disableTexture2D();
 					bufferbuilder.begin(7, DefaultVertexFormats.POSITION_COLOR);
 					bufferbuilder.pos((double) k1, (double) l1, 0.0D).color(128, 128, 128, 255).endVertex();
 					bufferbuilder.pos((double) k1, (double) (l1 + 2), 0.0D).color(128, 128, 128, 255).endVertex();
-					bufferbuilder.pos((double) (k1 + 100), (double) (l1 + 2), 0.0D).color(128, 128, 128, 255)
-							.endVertex();
+					bufferbuilder.pos((double) (k1 + 100), (double) (l1 + 2), 0.0D).color(128, 128, 128, 255).endVertex();
 					bufferbuilder.pos((double) (k1 + 100), (double) l1, 0.0D).color(128, 128, 128, 255).endVertex();
 					bufferbuilder.pos((double) k1, (double) l1, 0.0D).color(128, 255, 128, 255).endVertex();
 					bufferbuilder.pos((double) k1, (double) (l1 + 2), 0.0D).color(128, 255, 128, 255).endVertex();
-					bufferbuilder.pos((double) (k1 + progress), (double) (l1 + 2), 0.0D).color(128, 255, 128, 255)
-							.endVertex();
-					bufferbuilder.pos((double) (k1 + progress), (double) l1, 0.0D).color(128, 255, 128, 255)
-							.endVertex();
+					bufferbuilder.pos((double) (k1 + progress), (double) (l1 + 2), 0.0D).color(128, 255, 128, 255).endVertex();
+					bufferbuilder.pos((double) (k1 + progress), (double) l1, 0.0D).color(128, 255, 128, 255).endVertex();
 					tessellator.draw();
 					GlStateManager.enableTexture2D();
 				}
