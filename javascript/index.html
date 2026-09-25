@@ -1,38 +1,162 @@
 <!DOCTYPE html>
-<html lang="und" style="width:100%;height:100%;background-color:black;">
-	<head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
-		<meta name="description" content="Eaglercraft 1.12 test directory HTML page">
-		<meta name="keywords" content="eaglercraft, eaglercraftx, minecraft, 1.12, 1.12.2">
-		<title>Eaglercraft 1.12.2</title>
-		<meta property="og:locale" content="en-US">
-		<meta property="og:type" content="website">
-		<meta property="og:title" content="Eaglercraft 1.12.2">
-		<meta property="og:description" content="test directory HTML page">
-		<link type="image/png" rel="shortcut icon" href="favicon.png">
-		<script type="text/javascript" src="classes.js"></script>
-		<script type="text/javascript">
-			"use strict";
-			window.addEventListener("load", function() {
-				if(window.location.href.indexOf("file:") === 0) {
-					alert("HTTP please, do not open this file locally, run a local HTTP server and load it via HTTP");
-				}else {
-					var relayId = Math.floor(Math.random() * 3);
-					window.eaglercraftXOpts = {
-						demoMode: false,
-						container: "game_frame",
-						assetsURI: "assets.epk",
-						localesURI: "lang/",
-						worldsDB: "worlds",
-						logInvalidCerts: true,
-						crashOnUncaughtExceptions: true
-					};
-					main();
-				}
-			});
-		</script>
-	</head>
-	<body style="margin:0px;width:100%;height:100%;overflow:hidden;background-color:black;" id="game_frame">
-	</body>
+<html lang="en" style="width:100%;height:100%;background-color:black;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="description" content="Herobine Client">
+    <title>Herobine Client</title>
+    <link type="image/png" rel="shortcut icon" href="favicon.png">
+</head>
+<body style="margin:0;width:100%;height:100%;overflow:hidden;background-color:black;" id="game_frame">
+<script>
+"use strict";
+
+const WORKER_URL = "https://premium.mmm-tek.workers.dev";
+const HOME_URL = "/";
+const SESSION_CHECK_INTERVAL = 1000;
+const SESSION_TIMEOUT = 120000;
+
+let loginWindow = null;
+let sessionTimer = null;
+let sessionTimeout = null;
+let clientStarted = false;
+
+async function getSession() {
+    const response = await fetch(WORKER_URL + "/session", {
+        method: "GET",
+        credentials: "include",
+        cache: "no-store"
+    });
+
+    if (!response.ok) {
+        throw new Error("Session request failed");
+    }
+
+    return response.json();
+}
+
+function redirectHome() {
+    //window.location.replace(HOME_URL);
+	startClient()
+}
+
+function stopLoginCheck() {
+    if (sessionTimer !== null) {
+        window.clearInterval(sessionTimer);
+        sessionTimer = null;
+    }
+
+    if (sessionTimeout !== null) {
+        window.clearTimeout(sessionTimeout);
+        sessionTimeout = null;
+    }
+
+    if (loginWindow && !loginWindow.closed) {
+        loginWindow.close();
+    }
+
+    loginWindow = null;
+}
+
+function beginLoginCheck() {
+    sessionTimer = window.setInterval(async function() {
+        try {
+            const session = await getSession();
+
+            if (session.authenticated === true && session.premium === true) {
+                stopLoginCheck();
+                startClient();
+                return;
+            }
+
+            if (session.authenticated === true && session.premium !== true) {
+                stopLoginCheck();
+                redirectHome();
+            }
+        } catch (error) {
+            stopLoginCheck();
+            redirectHome();
+        }
+    }, SESSION_CHECK_INTERVAL);
+
+    sessionTimeout = window.setTimeout(function() {
+        stopLoginCheck();
+        redirectHome();
+    }, SESSION_TIMEOUT);
+}
+
+function openLogin() {
+    loginWindow = window.open(
+        WORKER_URL + "/login",
+        "_blank",
+        "noopener,noreferrer"
+    );
+
+    if (!loginWindow) {
+        redirectHome();
+        return;
+    }
+
+    beginLoginCheck();
+}
+
+function startClient() {
+    if (clientStarted) {
+        return;
+    }
+
+    clientStarted = true;
+
+    const script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src = "classes.js";
+
+    script.onload = function() {
+        window.eaglercraftXOpts = {
+            demoMode: false,
+            container: "game_frame",
+            assetsURI: "assets.epk",
+            localesURI: "lang/",
+            worldsDB: "worlds",
+            logInvalidCerts: true,
+            crashOnUncaughtExceptions: true
+        };
+
+        if (typeof main === "function") {
+            main();
+        } else {
+            redirectHome();
+        }
+    };
+
+    script.onerror = function() {
+        redirectHome();
+    };
+
+    document.head.appendChild(script);
+}
+
+async function authorize() {
+    try {
+        if (window.location.protocol === "file:") {
+            redirectHome();
+            return;
+        }
+
+        const session = await getSession();
+
+        if (session.authenticated === true && session.premium === true) {
+            startClient();
+            return;
+        }
+
+        openLogin();
+    } catch (error) {
+        redirectHome();
+    }
+}
+
+authorize();
+</script>
+</body>
 </html>
